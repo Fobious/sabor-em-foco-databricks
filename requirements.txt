@@ -1,0 +1,28 @@
+﻿# ==========================================================
+# SABOR EM FOCO - MANIFESTO DE DEPENDENCIAS
+# Databricks Free Edition / Serverless
+# Versao inicial: 1.0.0
+# ==========================================================
+
+# Ambiente identificado:
+# Python: 3.12.3
+# Spark: 4.2.0
+# PySpark: 4.3.0.dev0+databricks.connect.19.1
+
+# Dependencias Python
+pandas==2.3.3
+numpy==2.3.4
+scikit-learn==1.7.2
+cloudpickle==3.1.1
+
+# Componentes gerenciados pelo Databricks:
+# - PySpark / Databricks Connect
+# - Delta Lake
+# - Unity Catalog
+# - Lakeflow Jobs
+
+# MLflow:
+# Biblioteca ainda nao instalada no ambiente identificado.
+# A dependencia sera adicionada durante a Fase 3.
+
+# Nao reinstalar PySpark manualmente no Databricks Serverless.

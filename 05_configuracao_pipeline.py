@@ -355,3 +355,49 @@ print("Tabelas existentes da Fase 1: OK")
 print("Funções compartilhadas: OK")
 print("\nVALIDAÇÃO APROVADA")
 print("Nenhuma tabela foi alterada.")
+
+
+# COMMAND ----------
+
+# DBTITLE 1,Dependencias
+
+import sys
+from importlib.metadata import version, PackageNotFoundError
+
+# ==========================================================
+# QUESTÃO 2.1.2.b - MANIFESTO DE DEPENDÊNCIAS
+# ==========================================================
+
+bibliotecas = [
+    "pyspark",
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "mlflow",
+    "cloudpickle"
+]
+
+print("=== AMBIENTE PYTHON ===")
+print(f"Python: {sys.version}")
+
+print("\n=== AMBIENTE SPARK ===")
+print(f"Spark: {spark.version}")
+
+print("\n=== DEPENDÊNCIAS ===")
+
+for biblioteca in bibliotecas:
+    try:
+        versao = version(biblioteca)
+        print(f"{biblioteca}=={versao}")
+
+    except PackageNotFoundError:
+        print(f"{biblioteca}: NÃO INSTALADA")
+
+print("\n=== SERVIÇOS GERENCIADOS ===")
+print("Databricks Serverless")
+print("Delta Lake")
+print("Unity Catalog")
+print("Lakeflow Jobs")
+print("MLflow Tracking e Model Registry")
+
+print("\nMANIFESTO DE DEPENDÊNCIAS IDENTIFICADO.")

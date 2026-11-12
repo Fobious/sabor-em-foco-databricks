@@ -21,8 +21,5 @@ cloudpickle==3.1.1
 # - Unity Catalog
 # - Lakeflow Jobs
 
-# MLflow:
-# Biblioteca ainda nao instalada no ambiente identificado.
-# A dependencia sera adicionada durante a Fase 3.
-
-# Nao reinstalar PySpark manualmente no Databricks Serverless.
+# MLflow - Tracking e Model Registry
+mlflow-skinny[databricks]==3.12.0

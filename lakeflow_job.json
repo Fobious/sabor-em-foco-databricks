@@ -1,0 +1,174 @@
+{
+  "created_time": 1794462105433,
+  "creator_user_name": "fabricio.dsantos@al.infnet.edu.br",
+  "job_id": 452296240075327,
+  "run_as_user_name": "fabricio.dsantos@al.infnet.edu.br",
+  "settings": {
+    "description": "Pipeline de preparação, validação, recuperação de modelo registrado, inferência e atualização de métricas do projeto Sabor em Foco.",
+    "email_notifications": {},
+    "format": "MULTI_TASK",
+    "max_concurrent_runs": 1,
+    "name": "Sabor em Foco - Pipeline Operacional",
+    "parameters": [
+      {
+        "default": "inferencia",
+        "name": "modo"
+      },
+      {
+        "default": "operacional_2",
+        "name": "lote_id"
+      },
+      {
+        "default": "dev",
+        "name": "ambiente"
+      },
+      {
+        "default": "false",
+        "name": "simular_falha"
+      }
+    ],
+    "performance_target": "PERFORMANCE_OPTIMIZED",
+    "queue": {
+      "enabled": true
+    },
+    "tasks": [
+      {
+        "disable_auto_optimization": true,
+        "disabled": false,
+        "email_notifications": {},
+        "max_retries": 0,
+        "min_retry_interval_millis": 0,
+        "notebook_task": {
+          "base_parameters": {
+            "ambiente": "{{job.parameters.ambiente}}",
+            "etapa": "preparar",
+            "job_run_id": "{{job.run_id}}",
+            "lote_id": "{{job.parameters.lote_id}}",
+            "modo": "{{job.parameters.modo}}",
+            "simular_falha": "{{job.parameters.simular_falha}}"
+          },
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/06_pipeline_dados",
+          "source": "WORKSPACE"
+        },
+        "retry_on_timeout": false,
+        "run_if": "ALL_SUCCESS",
+        "task_key": "01_preparar",
+        "timeout_seconds": 0
+      },
+      {
+        "depends_on": [
+          {
+            "task_key": "01_preparar"
+          }
+        ],
+        "disable_auto_optimization": true,
+        "disabled": false,
+        "email_notifications": {},
+        "max_retries": 0,
+        "min_retry_interval_millis": 0,
+        "notebook_task": {
+          "base_parameters": {
+            "ambiente": "{{job.parameters.ambiente}}",
+            "etapa": "validar",
+            "job_run_id": "{{job.run_id}}",
+            "lote_id": "{{job.parameters.lote_id}}",
+            "modo": "{{job.parameters.modo}}",
+            "simular_falha": "{{job.parameters.simular_falha}}"
+          },
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/06_pipeline_dados",
+          "source": "WORKSPACE"
+        },
+        "retry_on_timeout": false,
+        "run_if": "ALL_SUCCESS",
+        "task_key": "02_validar",
+        "timeout_seconds": 0
+      },
+      {
+        "depends_on": [
+          {
+            "task_key": "02_validar"
+          }
+        ],
+        "disable_auto_optimization": true,
+        "disabled": false,
+        "email_notifications": {},
+        "max_retries": 0,
+        "min_retry_interval_millis": 0,
+        "notebook_task": {
+          "base_parameters": {
+            "ambiente": "{{job.parameters.ambiente}}",
+            "etapa": "treinar_carregar",
+            "job_run_id": "{{job.run_id}}",
+            "lote_id": "{{job.parameters.lote_id}}",
+            "modo": "{{job.parameters.modo}}",
+            "simular_falha": "{{job.parameters.simular_falha}}"
+          },
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/09_pipeline_operacional",
+          "source": "WORKSPACE"
+        },
+        "retry_on_timeout": false,
+        "run_if": "ALL_SUCCESS",
+        "task_key": "03_treinar_carregar",
+        "timeout_seconds": 0
+      },
+      {
+        "depends_on": [
+          {
+            "task_key": "03_treinar_carregar"
+          }
+        ],
+        "disable_auto_optimization": true,
+        "disabled": false,
+        "email_notifications": {},
+        "max_retries": 0,
+        "min_retry_interval_millis": 0,
+        "notebook_task": {
+          "base_parameters": {
+            "ambiente": "{{job.parameters.ambiente}}",
+            "etapa": "inferir",
+            "job_run_id": "{{job.run_id}}",
+            "lote_id": "{{job.parameters.lote_id}}",
+            "modo": "{{job.parameters.modo}}",
+            "simular_falha": "{{job.parameters.simular_falha}}"
+          },
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/09_pipeline_operacional",
+          "source": "WORKSPACE"
+        },
+        "retry_on_timeout": false,
+        "run_if": "ALL_SUCCESS",
+        "task_key": "04_inferir",
+        "timeout_seconds": 0
+      },
+      {
+        "depends_on": [
+          {
+            "task_key": "04_inferir"
+          }
+        ],
+        "disable_auto_optimization": true,
+        "disabled": false,
+        "email_notifications": {},
+        "max_retries": 0,
+        "min_retry_interval_millis": 0,
+        "notebook_task": {
+          "base_parameters": {
+            "ambiente": "{{job.parameters.ambiente}}",
+            "etapa": "atualizar_metricas",
+            "job_run_id": "{{job.run_id}}",
+            "lote_id": "{{job.parameters.lote_id}}",
+            "modo": "{{job.parameters.modo}}",
+            "simular_falha": "{{job.parameters.simular_falha}}"
+          },
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/09_pipeline_operacional",
+          "source": "WORKSPACE"
+        },
+        "retry_on_timeout": false,
+        "run_if": "ALL_SUCCESS",
+        "task_key": "05_atualizar_metricas",
+        "timeout_seconds": 0
+      }
+    ],
+    "timeout_seconds": 0,
+    "webhook_notifications": {}
+  }
+}

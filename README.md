@@ -1,129 +1,83 @@
-# Sabor em Foco — Engenharia de Dados, Orquestração e MLOps
+# Sabor em Foco — Databricks
 
-Projeto acadêmico desenvolvido para o Instituto Infnet, utilizando Databricks Free Edition para implementação de uma arquitetura de dados em camadas, processamento incremental, qualidade de dados, orquestração, Machine Learning e IA Generativa.
+Projeto acadêmico desenvolvido para o Assessment da disciplina Engenharia Avançada, Orquestração e MLOps/GenAI com Databricks — INFNET.
 
-## 1. Ambiente
+## Objetivo
 
-- Plataforma: Databricks Free Edition.
-- Processamento: Databricks Serverless.
-- Catálogo: `workspace`.
-- Schema de desenvolvimento: `workspace.sabor_dev`.
-- Schema operacional: `workspace.sabor_operacao`.
-- Formato de armazenamento: Delta Lake.
-- Governança e catálogo: Unity Catalog.
-- Orquestração: Lakeflow Jobs.
-- Rastreamento de experimentos: MLflow.
+Construir uma solução de Engenharia de Dados, Machine Learning e IA Generativa para análise de avaliações de produtos, identificação de avaliações com baixa nota e acompanhamento de indicadores operacionais.
 
-## 2. Separação dos schemas
+## Tecnologias
 
-Os objetos do projeto são organizados em dois schemas dentro do mesmo catálogo:
+- Databricks Free Edition
+- Apache Spark e PySpark
+- Delta Lake
+- Unity Catalog
+- Python e SQL
+- Scikit-learn
+- MLflow e Model Registry
+- Lakeflow Jobs
+- Databricks AI Functions
+- Databricks AI/BI Dashboards
 
-- `sabor_dev`: dados históricos, tabelas Bronze, Silver, Gold, quarentena e preparação de dados para Machine Learning.
-- `sabor_operacao`: controle de versões, logs de execução, processamento operacional, predições, métricas e monitoramento.
+## Dataset
 
-Essa separação possui finalidade didática e organizacional. Os dois schemas pertencem ao mesmo workspace Databricks e não representam ambientes corporativos fisicamente isolados.
+Amazon Fine Food Reviews, disponível no Kaggle:
 
-Em um ambiente corporativo, a separação entre desenvolvimento e produção poderia exigir workspaces independentes, identidades de execução distintas, políticas de acesso específicas, processos de implantação e controles adicionais de governança.
+https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews
 
-## 3. Fonte dos dados
+O conjunto original contém 568.454 avaliações.
 
-O projeto utiliza o dataset Amazon Fine Food Reviews, disponibilizado no Kaggle.
+## Organização do projeto
 
-Fonte: https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews
+- `fase_01_engenharia_dados`: ingestão, qualidade, quarentena, transformação e agregações Bronze, Silver e Gold.
+- `fase_02_orquestracao`: configuração compartilhada, pipeline parametrizado, consultas operacionais e definição do Lakeflow Job.
+- `fase_03_machine_learning`: experimentos, registro de modelos, inferência, monitoramento, retreinamento e rollback.
+- `fase_04_ia_generativa`: análise de sentimento, sumarização, avaliação crítica e definição do dashboard.
 
-O arquivo original `Reviews.csv` contém 568.454 avaliações.
+## Pré-requisitos
 
-O arquivo deve ser carregado no Volume gerenciado:
+- Workspace Databricks com Unity Catalog.
+- Catálogo `workspace`.
+- Schemas `workspace.sabor_dev` e `workspace.sabor_operacao`.
+- Volume gerenciado `workspace.sabor_dev.dados_brutos`.
+- Dataset `Reviews.csv` carregado em `/Volumes/workspace/sabor_dev/dados_brutos/Reviews.csv`.
+- Dependências descritas no arquivo `requirements.txt`.
 
-`/Volumes/workspace/sabor_dev/dados_brutos/Reviews.csv`
+Os notebooks `.py` estão no formato Databricks Source e devem ser importados como notebooks no workspace, preservando a estrutura das pastas.
 
-O dataset não está incluído no repositório Git.
+## Ordem de execução
 
-## 4. Organização do código
+1. Criar os schemas e o Volume gerenciado e carregar o dataset.
+2. Executar os notebooks 01 a 04 da Fase 1.
+3. Configurar os parâmetros compartilhados no notebook 05 da Fase 2.
+4. Executar as etapas de preparação, experimentação e registro do notebook 07 da Fase 3.
+5. Executar as etapas de inferência, monitoramento, retreinamento e rollback dos notebooks 07 e 08, respeitando as dependências e a sequência das células.
+6. Configurar o Lakeflow Job utilizando o arquivo `lakeflow_job.json`, adaptando os caminhos absolutos dos notebooks ao workspace de destino.
+7. Executar o Job utilizando os notebooks 06 e 09.
+8. Executar as etapas de IA Generativa do notebook 10, respeitando os limites acadêmicos de processamento.
+9. Importar a definição `dashboard_sabor_em_foco.lvdash.json` e configurar o SQL Warehouse.
 
-| Arquivo | Responsabilidade |
-|---|---|
-| `01_ingestao_bronze.py` | Leitura e persistência dos dados históricos na Bronze |
-| `02_qualidade_quarentena.py` | Validação de qualidade e testes de quarentena |
-| `03_transformacao_silver.py` | Normalização dos dados e processamento incremental |
-| `04_agregacoes_gold.py` | Agregações, preparação para ML, reconciliação e versionamento |
-| `05_configuracao_pipeline.py` | Configuração centralizada e funções compartilhadas |
-| `consultas_operacionais.sql` | Consultas SQL de auditoria e acompanhamento |
+A ordem de execução considera as dependências entre as fases. O pipeline operacional depende dos modelos previamente treinados e registrados na Fase 3.
 
-## 5. Dependências
+## Principais resultados
 
-O projeto utiliza Python, PySpark, Delta Lake e serviços gerenciados pelo Databricks.
+- 568.454 avaliações ingeridas na Bronze.
+- 511.534 avaliações na Silver após processamento do primeiro lote operacional.
+- 394.633 avaliações na Gold ML após deduplicação textual.
+- Pipeline operacional com validação, registro de falhas e recuperação.
+- Modelo de Regressão Logística registrado e versionado no MLflow.
+- Inferência em dois lotes operacionais, monitoramento, retreinamento e rollback.
+- 50 análises de sentimento e 20 resumos persistidos.
+- Dashboard nativo com indicadores de negócio, Machine Learning, qualidade e eficiência operacional.
 
-As versões das bibliotecas Python são documentadas no arquivo `requirements.txt`.
+## Considerações de execução
 
-O processamento deve utilizar um ambiente Databricks Serverless compatível com as dependências identificadas.
+O projeto foi desenvolvido de forma incremental, com validações e experimentos registrados durante a implementação.
 
-O PySpark é fornecido pelo ambiente Databricks e não deve ser reinstalado manualmente no notebook.
+O Lakeflow Job utiliza modelos previamente registrados. A limpeza textual foi realizada antes do pipeline de Machine Learning.
 
-As dependências utilizadas nas fases de Machine Learning e IA Generativa serão atualizadas conforme a implementação e registradas no histórico do repositório.
+Na etapa de sumarização, uma execução adicional resultou em 20 resumos persistidos, ultrapassando o limite acadêmico original de dez. Essa ocorrência está documentada no relatório.
 
-## 6. Configuração inicial em uma nova sessão
+Os notebooks experimentais devem ser executados de forma controlada para evitar novos treinamentos, versões adicionais de modelos ou consumo desnecessário das AI Functions.
 
-1. Acessar um workspace Databricks com Unity Catalog e processamento Serverless disponíveis.
-2. Criar os schemas `workspace.sabor_dev` e `workspace.sabor_operacao`, caso ainda não existam.
-3. Criar o Volume gerenciado `workspace.sabor_dev.dados_brutos`.
-4. Realizar o upload do arquivo `Reviews.csv` para o Volume.
-5. Importar os notebooks e o arquivo SQL do repositório para uma mesma pasta do Workspace.
-6. Selecionar um ambiente Serverless compatível e verificar as bibliotecas instaladas.
-7. Executar os notebooks da Fase 1 na ordem indicada abaixo.
-8. Executar o notebook de configuração centralizada e verificar a disponibilidade das tabelas.
-
-## 7. Ordem de execução inicial
-
-1. `01_ingestao_bronze`
-2. `02_qualidade_quarentena`
-3. `03_transformacao_silver`
-4. `04_agregacoes_gold`
-5. `05_configuracao_pipeline`
-
-A execução dos notebooks da Fase 1 destina-se à preparação inicial e à demonstração acadêmica dos processamentos.
-
-Em um ambiente já inicializado, não é necessário reexecutar indiscriminadamente esses notebooks, pois algumas operações podem sobrescrever tabelas derivadas ou modificar versões Delta.
-
-Os notebooks operacionais das fases posteriores utilizarão a configuração centralizada e serão executados conforme as dependências do Lakeflow Job.
-
-## 8. Configuração centralizada
-
-O notebook `05_configuracao_pipeline` concentra os seguintes parâmetros:
-
-- Catálogo e schemas.
-- Caminho do Volume e arquivo de origem.
-- Semente dos experimentos.
-- Cortes cronológicos.
-- Limites de amostras para treinamento, retreinamento, inferência e IA Generativa.
-- Nome do experimento MLflow.
-- Identificadores das tabelas e modelos.
-- Funções compartilhadas para normalização textual, classificação temporal e geração do alvo.
-
-## 9. Reprodutibilidade
-
-Os dados são armazenados em tabelas Delta. As versões das tabelas utilizadas são registradas em `workspace.sabor_operacao.versoes_dados`.
-
-O código-fonte é mantido sob controle de versão Git, permitindo identificar alterações por meio dos commits.
-
-A reprodutibilidade dos experimentos depende da disponibilidade das versões Delta registradas, das dependências utilizadas, dos parâmetros de execução e da versão do código.
-
-## 10. Processamento incremental
-
-O arquivo histórico foi dividido cronologicamente em:
-
-| Recorte | Registros |
-|---|---:|
-| Desenvolvimento | 454.533 |
-| Operacional 1 | 57.001 |
-| Operacional 2 | 56.920 |
-
-Os lotes representam uma simulação de chegada incremental de avaliações, e não um fluxo real de Change Data Capture (CDC).
-
-A Silver utiliza `MERGE INTO` com a chave `Id` para inserir avaliações ainda não existentes, evitando duplicações em reexecuções.
-
-## 11. Histórico de alterações
-
-- v1.0.0: implementação das camadas Bronze, Silver e Gold, regras de qualidade, quarentena, reconciliação, recortes temporais e configuração centralizada.
-
-As próximas versões incorporarão a orquestração operacional, os experimentos de Machine Learning, o monitoramento e as funcionalidades de IA Generativa.
+O dataset original não acompanha o repositório e deve ser obtido na fonte indicada.

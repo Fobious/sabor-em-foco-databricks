@@ -1504,3 +1504,7 @@ champion = client.get_model_version_by_alias(
 
 print(f"Champion final: versão {champion.version}")
 print("RETREINAMENTO CONCLUÍDO.")
+
+
+# COMMAND ----------
+

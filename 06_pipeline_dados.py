@@ -471,3 +471,86 @@ display(
     spark.table(TABELA_LOG)
     .filter(F.col("tentativa_id") == tentativa_id)
 )
+
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+# MAGIC SELECT
+# MAGIC     job_run_id,
+# MAGIC     tentativa_id,
+# MAGIC     lote_id,
+# MAGIC     etapa,
+# MAGIC     inicio,
+# MAGIC     fim,
+# MAGIC     duracao_segundos,
+# MAGIC     status,
+# MAGIC     registros_entrada,
+# MAGIC     registros_saida,
+# MAGIC     registros_invalidos,
+# MAGIC     versao_dados,
+# MAGIC     erro
+# MAGIC
+# MAGIC FROM workspace.sabor_operacao.logs_execucao
+# MAGIC
+# MAGIC WHERE job_run_id NOT LIKE 'teste_manual%'
+# MAGIC
+# MAGIC ORDER BY inicio DESC;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+# MAGIC SELECT
+# MAGIC     job_run_id,
+# MAGIC     lote_id,
+# MAGIC     COUNT(*) AS total_etapas,
+# MAGIC
+# MAGIC     COUNT_IF(status = 'SUCESSO')
+# MAGIC         AS etapas_sucesso,
+# MAGIC
+# MAGIC     COUNT_IF(status = 'FALHA')
+# MAGIC         AS etapas_falha,
+# MAGIC
+# MAGIC     ROUND(SUM(duracao_segundos), 2)
+# MAGIC         AS duracao_total_segundos,
+# MAGIC
+# MAGIC     MIN(inicio) AS inicio_execucao,
+# MAGIC     MAX(fim) AS fim_execucao
+# MAGIC
+# MAGIC FROM workspace.sabor_operacao.logs_execucao
+# MAGIC
+# MAGIC WHERE job_run_id NOT LIKE 'teste_manual%'
+# MAGIC
+# MAGIC GROUP BY job_run_id, lote_id
+# MAGIC
+# MAGIC ORDER BY inicio_execucao DESC;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+# MAGIC SELECT
+# MAGIC     job_run_id,
+# MAGIC     lote_id,
+# MAGIC     COUNT(*) AS total_etapas,
+# MAGIC     COUNT_IF(status = 'SUCESSO') AS etapas_sucesso,
+# MAGIC     COUNT_IF(status = 'FALHA') AS etapas_falha,
+# MAGIC     ROUND(SUM(duracao_segundos), 2) AS duracao_segundos
+# MAGIC FROM workspace.sabor_operacao.logs_execucao
+# MAGIC WHERE job_run_id NOT LIKE 'teste_manual%'
+# MAGIC GROUP BY job_run_id, lote_id
+# MAGIC ORDER BY MAX(inicio) DESC;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+# MAGIC SELECT
+# MAGIC     COUNT(*) AS total,
+# MAGIC     COUNT(DISTINCT Id) AS ids_distintos,
+# MAGIC     COUNT(*) - COUNT(DISTINCT Id) AS duplicidades
+# MAGIC FROM workspace.sabor_operacao.predicoes_reviews
+# MAGIC WHERE lote_id = 'operacional_2'
+# MAGIC   AND versao_modelo = '3';

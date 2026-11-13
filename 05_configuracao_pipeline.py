@@ -401,3 +401,174 @@ print("Lakeflow Jobs")
 print("MLflow Tracking e Model Registry")
 
 print("\nMANIFESTO DE DEPENDÊNCIAS IDENTIFICADO.")
+
+
+# COMMAND ----------
+
+
+# =====================================================
+# 2.4 - GOVERNANCA E RASTREABILIDADE
+# =====================================================
+
+descricao_tabelas = {
+    "workspace.sabor_dev.bronze_reviews":
+        "Avaliacoes originais do arquivo Reviews.csv, com metadados de ingestao.",
+
+    "workspace.sabor_dev.quarentena_reviews":
+        "Registros historicos rejeitados pelas regras de qualidade.",
+
+    "workspace.sabor_dev.quarentena_reviews_teste":
+        "Registros sinteticos utilizados para testar as regras de qualidade.",
+
+    "workspace.sabor_dev.silver_reviews":
+        "Avaliacoes validas, normalizadas e classificadas por recorte temporal.",
+
+    "workspace.sabor_dev.gold_avaliacoes_mensais":
+        "Indicadores mensais de volume, nota media e avaliacoes de baixa nota.",
+
+    "workspace.sabor_dev.gold_avaliacoes_produto":
+        "Indicadores agregados por produto para consumo analitico.",
+
+    "workspace.sabor_dev.gold_reviews_ml":
+        "Base textual preparada para Machine Learning, com alvo binario e recortes temporais.",
+
+    "workspace.sabor_dev.gold_reviews_ml_deduplicada":
+        "Base de Machine Learning sem repeticoes textuais entre desenvolvimento e lotes operacionais.",
+
+    "workspace.sabor_operacao.versoes_dados":
+        "Registro das versoes Delta utilizadas para reproducao dos experimentos.",
+
+    "workspace.sabor_operacao.dados_pipeline":
+        "Dados preparados e validados para a execucao do Lakeflow Job.",
+
+    "workspace.sabor_operacao.logs_execucao":
+        "Historico de tentativas, duracoes, status, contagens e erros do pipeline.",
+
+    "workspace.sabor_operacao.modelo_pipeline":
+        "Contexto do modelo resolvido para cada execucao operacional.",
+
+    "workspace.sabor_operacao.predicoes_reviews":
+        "Predicoes por avaliacao, lote e versao do modelo, com probabilidades e rastreabilidade.",
+
+    "workspace.sabor_operacao.monitoramento_reviews":
+        "Indicadores de qualidade, mudanca textual e desempenho do modelo.",
+
+    "workspace.sabor_operacao.metricas_lote2":
+        "Metricas de avaliacao do modelo no segundo lote operacional.",
+
+    "workspace.sabor_operacao.metricas_pipeline":
+        "Metricas calculadas durante as execucoes do Lakeflow Job."
+}
+
+resultados = []
+
+for tabela, descricao in descricao_tabelas.items():
+
+    if spark.catalog.tableExists(tabela):
+
+        spark.sql(f"""
+            COMMENT ON TABLE {tabela}
+            IS '{descricao}'
+        """)
+
+        resultados.append((tabela, "DOCUMENTADA"))
+
+    else:
+        resultados.append((tabela, "NAO ENCONTRADA"))
+
+display(
+    spark.createDataFrame(
+        resultados,
+        ["tabela", "status"]
+    )
+)
+
+print("DOCUMENTACAO DOS ATIVOS CONCLUIDA.")
+
+
+# COMMAND ----------
+
+
+# Verifica as colunas das bases analiticas e de ML
+
+tabelas = [
+    "workspace.sabor_dev.silver_reviews",
+    "workspace.sabor_dev.gold_avaliacoes_mensais",
+    "workspace.sabor_dev.gold_avaliacoes_produto",
+    "workspace.sabor_dev.gold_reviews_ml",
+    "workspace.sabor_dev.gold_reviews_ml_deduplicada",
+    "workspace.sabor_operacao.dados_pipeline",
+    "workspace.sabor_operacao.predicoes_reviews"
+]
+
+proibidas = {"profilename", "userid"}
+
+resultados = []
+
+for tabela in tabelas:
+
+    colunas = spark.table(tabela).columns
+
+    encontradas = [
+        c for c in colunas
+        if c.lower() in proibidas
+    ]
+
+    resultados.append((
+        tabela,
+        ", ".join(encontradas) or "NENHUMA",
+        "APROVADO" if not encontradas else "REPROVADO"
+    ))
+
+display(
+    spark.createDataFrame(
+        resultados,
+        ["tabela", "colunas_pessoais", "status"]
+    )
+)
+
+
+# COMMAND ----------
+
+# MAGIC
+# MAGIC %sql
+# MAGIC
+# MAGIC SELECT
+# MAGIC     p.Id,
+# MAGIC     b.arquivo_origem,
+# MAGIC     b.lote_id AS lote_ingestao,
+# MAGIC
+# MAGIC     CASE
+# MAGIC         WHEN s.Id IS NOT NULL THEN 'PRESENTE'
+# MAGIC         ELSE 'AUSENTE'
+# MAGIC     END AS registro_silver,
+# MAGIC
+# MAGIC     g.recorte_temporal,
+# MAGIC     g.assinatura_textual,
+# MAGIC
+# MAGIC     p.modelo,
+# MAGIC     p.versao_modelo,
+# MAGIC     p.run_id,
+# MAGIC     p.lote_id AS lote_inferencia,
+# MAGIC     p.instante_predicao,
+# MAGIC     p.classe_predita,
+# MAGIC     p.probabilidade_classe_1
+# MAGIC
+# MAGIC FROM workspace.sabor_operacao.predicoes_reviews p
+# MAGIC
+# MAGIC JOIN workspace.sabor_dev.bronze_reviews b
+# MAGIC     ON p.Id = CAST(b.Id AS BIGINT)
+# MAGIC
+# MAGIC LEFT JOIN workspace.sabor_dev.silver_reviews s
+# MAGIC     ON p.Id = s.Id
+# MAGIC
+# MAGIC JOIN workspace.sabor_dev.gold_reviews_ml_deduplicada g
+# MAGIC     ON p.Id = g.Id
+# MAGIC
+# MAGIC WHERE p.lote_id = 'operacional_1'
+# MAGIC   AND p.versao_modelo = '2'
+# MAGIC
+# MAGIC ORDER BY p.Id
+# MAGIC
+# MAGIC LIMIT 5;
+# MAGIC

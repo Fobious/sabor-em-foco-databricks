@@ -47,7 +47,7 @@
             "modo": "{{job.parameters.modo}}",
             "simular_falha": "{{job.parameters.simular_falha}}"
           },
-          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/06_pipeline_dados",
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/fase_02_orquestracao/06_pipeline_dados",
           "source": "WORKSPACE"
         },
         "retry_on_timeout": false,
@@ -75,7 +75,7 @@
             "modo": "{{job.parameters.modo}}",
             "simular_falha": "{{job.parameters.simular_falha}}"
           },
-          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/06_pipeline_dados",
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/fase_02_orquestracao/06_pipeline_dados",
           "source": "WORKSPACE"
         },
         "retry_on_timeout": false,
@@ -103,7 +103,7 @@
             "modo": "{{job.parameters.modo}}",
             "simular_falha": "{{job.parameters.simular_falha}}"
           },
-          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/09_pipeline_operacional",
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/fase_02_orquestracao/09_pipeline_operacional",
           "source": "WORKSPACE"
         },
         "retry_on_timeout": false,
@@ -131,7 +131,7 @@
             "modo": "{{job.parameters.modo}}",
             "simular_falha": "{{job.parameters.simular_falha}}"
           },
-          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/09_pipeline_operacional",
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/fase_02_orquestracao/09_pipeline_operacional",
           "source": "WORKSPACE"
         },
         "retry_on_timeout": false,
@@ -159,7 +159,7 @@
             "modo": "{{job.parameters.modo}}",
             "simular_falha": "{{job.parameters.simular_falha}}"
           },
-          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/09_pipeline_operacional",
+          "notebook_path": "/Users/fabricio.dsantos@al.infnet.edu.br/Sabor em Foco/fase_02_orquestracao/09_pipeline_operacional",
           "source": "WORKSPACE"
         },
         "retry_on_timeout": false,

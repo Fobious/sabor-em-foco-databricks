@@ -5,7 +5,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,importando config
-# MAGIC %run ./05_configuracao_pipeline
+# MAGIC %run ../fase_02_orquestracao/05_configuracao_pipeline
 
 # COMMAND ----------
 
